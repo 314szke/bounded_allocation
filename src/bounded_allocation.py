@@ -1,4 +1,4 @@
-FLOAT_PRECISION_DIGITS = 4
+from src.utils import ROUND
 
 class BoundedAllocationProblemSolver:
     def __init__(self, input, verbose):
@@ -19,10 +19,6 @@ class BoundedAllocationProblemSolver:
         self.objective_value = 0
 
 
-    def _round(self, value):
-        return round(value, FLOAT_PRECISION_DIGITS)
-
-
     def _get_buyers(self, item):
         for idx, level in enumerate(self.levels):
             buyers = level.intersection(item.interested_buyers)
@@ -34,8 +30,8 @@ class BoundedAllocationProblemSolver:
     def _get_min_max_budget(self, buyer_ids, fraction_bound):
         min_budget = float('inf')
         for id in buyer_ids:
-            available_fraction = self._round(fraction_bound - self.buyers[id].budget_fraction)
-            available_budget = self._round(self.buyers[id].budget * available_fraction)
+            available_fraction = ROUND(fraction_bound - self.buyers[id].budget_fraction)
+            available_budget = ROUND(self.buyers[id].budget * available_fraction)
             if available_budget < min_budget:
                 min_budget = available_budget
         return min_budget
@@ -43,24 +39,24 @@ class BoundedAllocationProblemSolver:
 
     def _assign_fraction(self, buyer_id, item_id, fraction):
         try:
-            self.assignment[buyer_id][item_id] = self._round(self.assignment[buyer_id][item_id] + fraction)
+            self.assignment[buyer_id][item_id] = ROUND(self.assignment[buyer_id][item_id] + fraction)
         except:
             self.assignment[buyer_id][item_id] = fraction
 
 
     def _allocate_on_level(self, item, remaining_fraction, level_idx, buyer_ids):
-        fraction_bound = self._round((level_idx + 1) / self.bound)
+        fraction_bound = ROUND((level_idx + 1) / self.bound)
         exhausted_buyer_ids = set()
         last_round = False
 
         while len(buyer_ids) != 0:
             # Split it item equally among the buyers
-            fraction_per_buyer = self._round(remaining_fraction / len(buyer_ids))
-            price_fraction_per_buyer = self._round(item.price * fraction_per_buyer)
+            fraction_per_buyer = ROUND(remaining_fraction / len(buyer_ids))
+            price_fraction_per_buyer = ROUND(item.price * fraction_per_buyer)
 
             # Max refers to the fraction with which a buyer changes level
             max_price = self._get_min_max_budget(buyer_ids, fraction_bound)
-            max_fraction = self._round(max_price / item.price)
+            max_fraction = ROUND(max_price / item.price)
 
             # The item can be evenly split among the buyers without jumping to higher levels
             if price_fraction_per_buyer <= max_price:
@@ -79,14 +75,14 @@ class BoundedAllocationProblemSolver:
             if last_round:
                 return 0.0
 
-            remaining_fraction = self._round(remaining_fraction - (len(buyer_ids) * fraction_per_buyer))
+            remaining_fraction = ROUND(remaining_fraction - (len(buyer_ids) * fraction_per_buyer))
             buyer_ids = buyer_ids.difference(exhausted_buyer_ids)
 
         return remaining_fraction
 
 
     def _update_the_level_sets(self, buyer_ids, level_idx):
-        fraction_bound = self._round((level_idx + 1) / self.bound)
+        fraction_bound = ROUND((level_idx + 1) / self.bound)
         for id in buyer_ids:
             if self.buyers[id].budget_fraction >= fraction_bound:
                 self.levels[level_idx].remove(id)
@@ -122,11 +118,11 @@ class BoundedAllocationProblemSolver:
         for sold_items in self.assignment:
             for id, fraction in sold_items.items():
                 self.objective_value += self.items[id].price * fraction
-        self.objective_value = self._round(self.objective_value)
+        self.objective_value = ROUND(self.objective_value)
 
 
     def solve(self, eta):
-        self.doubt = self._round(eta)
+        self.doubt = ROUND(eta)
         self._init_solver()
 
         for item in self.items:
@@ -142,7 +138,7 @@ class BoundedAllocationProblemSolver:
 
     def get_solution_gap(self, offline_objective_value):
         ratio = (self.objective_value / offline_objective_value)
-        return  self._round(((1.0 - ratio) * 100))
+        return  ROUND(((1.0 - ratio) * 100))
 
 
     def get_maximum_budget_violation(self):
@@ -151,10 +147,10 @@ class BoundedAllocationProblemSolver:
             spent_money = 0
             for j, fraction in sold_item_fractions.items():
                 spent_money += self.items[j].price * fraction
-            spent_money = self._round(spent_money)
+            spent_money = ROUND(spent_money)
 
             if spent_money > self.buyers[i].budget:
-                fraction = self._round((spent_money / self.buyers[i].budget) - 1)
+                fraction = ROUND((spent_money / self.buyers[i].budget) - 1)
                 if fraction > max_violation:
                     max_violation = fraction
 

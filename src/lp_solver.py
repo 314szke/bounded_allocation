@@ -2,7 +2,7 @@ import json
 import os
 import pulp
 
-FLOAT_PRECISION_DIGITS = 4
+from src.utils import ROUND
 
 class LPSolverWrapper:
     def __init__(self, input, cache_file, verbose):
@@ -97,7 +97,7 @@ class LPSolverWrapper:
         self._init_model("Continuous")
         self.model.solve(pulp.GUROBI_CMD(msg=self.print_solver_messages))
         self.status = self.model.status
-        self.fractional_objective_value = round(self.model.objective.value(), FLOAT_PRECISION_DIGITS)
+        self.fractional_objective_value = ROUND(self.model.objective.value())
         self.fractional_solution = self._get_solution()
 
         self._save_data_to_cache()
@@ -106,7 +106,7 @@ class LPSolverWrapper:
 
     def print_solution(self):
         ratio = (self.fractional_objective_value / self.integral_objective_value)
-        integrality_gap = round(((1.0 - ratio) * 100), FLOAT_PRECISION_DIGITS)
+        integrality_gap = ROUND((1.0 - ratio) * 100)
 
         print('The offline solution:')
         print(f'Status: {self.status} - {pulp.LpStatus[self.status]}')

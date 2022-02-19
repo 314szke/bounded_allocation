@@ -1,6 +1,6 @@
 import random
 
-FLOAT_PRECISION_DIGITS = 4
+from src.utils import ROUND
 
 class Buyer:
     def __init__(self, id, budget):
@@ -24,7 +24,7 @@ class Buyer:
 
     def spend(self, amount):
         self.spent += amount
-        self.budget_fraction = round((self.spent / self.budget), FLOAT_PRECISION_DIGITS)
+        self.budget_fraction = ROUND(self.spent / self.budget)
 
 
 
@@ -59,7 +59,7 @@ class InputGenerator:
         min_value = min(value_list)
         max_value = max(value_list)
         sum_value = sum(value_list)
-        avg_value = round((sum_value / all), FLOAT_PRECISION_DIGITS)
+        avg_value = ROUND(sum_value / all)
         return f'{name}\tmin = {min_value},\tmax = {max_value},\taverage = {avg_value}\n'
 
 
@@ -83,7 +83,7 @@ class InputGenerator:
         output += self._get_metric_string('Expenses:', expense_list, self.config.num_buyers)
 
         overflow = sum([x.potential_expense > x.budget for x in self.buyers])
-        percentage = round(((overflow / self.config.num_buyers) * 100), FLOAT_PRECISION_DIGITS)
+        percentage = ROUND((overflow / self.config.num_buyers) * 100)
         output += f'{percentage} % number of buyers want to spend more, than their budget.\n'
         return output
 
@@ -94,7 +94,7 @@ class InputGenerator:
 
     def _get_price(self):
         ratio = random.random()
-        price = round((self.config.max_price * ratio), FLOAT_PRECISION_DIGITS)
+        price = ROUND(self.config.max_price * ratio)
         price = max(price, self.config.min_price)
         return price
 
@@ -116,6 +116,6 @@ class InputGenerator:
             self.items.append(Item(idx, price, buyer_ids))
             for id in buyer_ids:
                 self.buyers[id].wanted_item_ids.append(idx)
-                self.buyers[id].potential_expense = round((self.buyers[id].potential_expense + price), FLOAT_PRECISION_DIGITS)
+                self.buyers[id].potential_expense = ROUND(self.buyers[id].potential_expense + price)
 
         return self
