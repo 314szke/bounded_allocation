@@ -22,8 +22,38 @@ class BoundedAllocationProblemSolver:
         self.objective_value = 0
 
 
-    def _allocate_for_one_buyer(self, item, prediction_fraction):
-        return 1.0 - prediction_fraction
+    def _update_buyer_level(self, buyer_id):
+        for idx, level in enumerate(self.levels):
+            if buyer_id in level:
+                self.levels[idx].remove(buyer_id)
+                break
+
+        fraction = self.buyers[buyer_id].budget_fraction
+        for idx in range(self.bound):
+            lower_bound = ROUND(idx / self.bound)
+            upper_bound = ROUND((idx + 1) / self.bound)
+            if lower_bound <= fraction and fraction < upper_bound:
+                self.levels[idx].add(buyer_id)
+                break
+
+
+    def _allocate_for_one_buyer(self, item):
+        prediction_fraction = ROUND(1.0 - self.doubt)
+        remaining_fraction = self.doubt
+
+        available_budget = self.buyers[item.prediction].budget - self.buyers[item.prediction].spent
+        price_fraction = ROUND(item.price * prediction_fraction)
+
+        if price_fraction > available_budget:
+            prediction_fraction = ROUND(available_budget / item.price)
+            price_fraction = ROUND(item.price * prediction_fraction)
+            remaining_fraction = ROUND(1.0 - prediction_fraction)
+
+        self.assignment[item.prediction][item.id] = prediction_fraction
+        self.buyers[item.prediction].spend(price_fraction)
+        self._update_buyer_level(item.prediction)
+
+        return remaining_fraction
 
 
     def _get_buyers(self, item):
@@ -123,8 +153,7 @@ class BoundedAllocationProblemSolver:
         self._init_solver()
 
         for item in self.items:
-            prediction_fraction = 1 - self.doubt
-            remaining_fraction = self._allocate_for_one_buyer(item, prediction_fraction)
+            remaining_fraction = self._allocate_for_one_buyer(item)
             self._allocate_equally(item, remaining_fraction)
 
         self._calculate_objective_value()

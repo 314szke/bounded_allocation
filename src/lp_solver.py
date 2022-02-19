@@ -32,9 +32,16 @@ class LPSolverWrapper:
             data = json.load(in_file)
             self.status = data['status']
             self.integral_objective_value = data['integral_objective_value']
-            self.integral_solution = data['integral_solution']
             self.fractional_objective_value = data['fractional_objective_value']
-            self.fractional_solution = data['fractional_solution']
+
+            # The json format converts the integral keys to strings, so we convert it back
+            self.integral_solution = []
+            for dictionary in data['integral_solution']:
+                self.integral_solution.append({int(key): value for key, value in dictionary.items()})
+
+            self.fractional_solution = []
+            for dictionary in data['fractional_solution']:
+                self.fractional_solution.append({int(key): value for key, value in dictionary.items()})
 
 
     def _save_data_to_cache(self):

@@ -6,6 +6,8 @@ from src.bounded_allocation import BoundedAllocationProblemSolver
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
+from src.prediction import include_prediction
+from src.verification import verify_solution
 from src.visualization import plot_results
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -86,7 +88,7 @@ if __name__ == '__main__':
     violations = {}
 
     for error in args.prediction_error:
-        # TODO: add prediction to input
+        include_prediction(input.items, error, lp_solver.integral_solution)
         solver = BoundedAllocationProblemSolver(input, verbose=args.verbose)
 
         gaps[error] = {}
@@ -107,6 +109,7 @@ if __name__ == '__main__':
 
         solver.solve(best_eta)
         solver.print_solution(error, offline_objective_value)
+        verify_solution(solver.assignment, len(input.items))
 
         gap_file = os.path.abspath(f'{DIR}/output/gap_{args.config_id}_{error}.dat')
         violation_file = os.path.abspath(f'{DIR}/output/violation_{args.config_id}_{error}.dat')

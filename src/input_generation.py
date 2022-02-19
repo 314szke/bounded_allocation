@@ -42,7 +42,7 @@ class Item:
 
 
     def __str__(self):
-        return f'Item\t[{self.id}]:\tprice = {self.price},\t\tprediction = {self.prediction},\t\tinterested_buyers = {self.interested_buyers}'
+        return f'Item\t[{self.id}]:\tprice = {self.price},\t\tprediction = {self.prediction},   \t\tinterested_buyers = {self.interested_buyers}'
 
 
     def __repr__(self):
