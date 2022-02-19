@@ -26,5 +26,6 @@ class ProblemConfiguration:
 CONFIGS = {
     0: ProblemConfiguration(10, 10, 10, 100, 1, 3, 0.1, 10, 42),
     1: ProblemConfiguration(100, 100, 10, 100, 1, 10, 0.1, 10, 1976),
-    2: ProblemConfiguration(100, 1000, 10, 100, 2, 5, 0.1, 8, 22)
+    2: ProblemConfiguration(100, 1000, 10, 100, 2, 5, 0.1, 8, 22),
+    3: ProblemConfiguration(100, 10_000, 10, 1000, 2, 3, 1, 10, 2022)
 }
