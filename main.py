@@ -8,7 +8,7 @@ from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
 from src.prediction import include_prediction
 from src.verification import verify_solution
-from src.visualization import plot_results
+from src.visualization import plot_result
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -55,16 +55,11 @@ def clean_up():
     print(f'All files have been cleaned up!')
 
 
-def save_result(gap_file, violation_file, gaps, violations):
+def save_result(gap_file, gaps):
     with open(gap_file, 'w+') as out_file:
         out_file.write('# eta\tgap\n')
         for eta, gap in gaps.items():
             out_file.write(f'{eta}\t\t{gap}\n')
-
-    with open(violation_file, 'w+') as out_file:
-        out_file.write('# eta\tviolation\n')
-        for eta, violation in violations.items():
-            out_file.write(f'{eta}\t\t{violation}\n')
 
 
 if __name__ == '__main__':
@@ -84,23 +79,19 @@ if __name__ == '__main__':
     lp_solver.print_solution()
 
     gaps = {}
-    violations = {}
 
     for error in args.prediction_error:
         include_prediction(input.items, error, lp_solver.integral_solution)
         solver = BoundedAllocationProblemSolver(input, verbose=args.verbose)
 
         gaps[error] = {}
-        violations[error] = {}
         best_objective_value = -1
         best_eta = None
 
         for k in range(args.number_of_experiments + 1):
             eta = k / args.number_of_experiments
             objective_value = solver.solve(eta)
-
             gaps[error][eta] = solver.get_solution_gap(offline_objective_value)
-            violations[error][eta] = solver.get_max_budget_violation()
 
             if objective_value > best_objective_value:
                 best_objective_value = objective_value
@@ -111,7 +102,6 @@ if __name__ == '__main__':
         verify_solution(solver.assignment, len(input.items))
 
         gap_file = os.path.abspath(f'{DIR}/output/gap_{args.config_id}_{error}.dat')
-        violation_file = os.path.abspath(f'{DIR}/output/violation_{args.config_id}_{error}.dat')
-        save_result(gap_file, violation_file, gaps[error], violations[error])
+        save_result(gap_file, gaps[error])
 
-    plot_results(gaps, violations)
+    plot_result(gaps)

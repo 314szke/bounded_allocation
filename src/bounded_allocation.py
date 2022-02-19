@@ -173,22 +173,6 @@ class BoundedAllocationProblemSolver:
         return  ROUND(((1.0 - ratio) * 100))
 
 
-    def get_max_budget_violation(self):
-        max_violation = 0.0
-        for i, sold_item_fractions in enumerate(self.assignment):
-            spent_money = 0
-            for j, fraction in sold_item_fractions.items():
-                spent_money += self.items[j].price * fraction
-            spent_money = ROUND(spent_money)
-
-            if spent_money > self.buyers[i].budget:
-                fraction = ROUND((spent_money / self.buyers[i].budget) - 1)
-                if fraction > max_violation:
-                    max_violation = fraction
-
-        return max_violation
-
-
     def print_solution(self, error, offline_objective_value):
         print('The online solution:')
         print(f'Eta = {self.doubt}')
