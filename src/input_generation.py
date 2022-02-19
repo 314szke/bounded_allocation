@@ -22,6 +22,11 @@ class Buyer:
         return self.__str__()
 
 
+    def reset(self):
+        self.spent = 0
+        self.budget_fraction = 0.0
+
+
     def spend(self, amount):
         self.spent += amount
         self.budget_fraction = ROUND(self.spent / self.budget)

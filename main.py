@@ -15,6 +15,7 @@ def parse_arguments():
     parser.add_argument('number_of_experiments', type=int, help='The value of eta will range from 0/N to N/N.')
     parser.add_argument('config_id', type=int, help='The id of the configuration to use.')
     parser.add_argument('-v', '--verbose', type=int, default=0, help='Sets the execution\'s verbose level. [0, 1 or 2]')
+    parser.add_argument('-c', '--clean', action='store_true', help='Deletes the cache and output files.')
     return parser.parse_args()
 
 
@@ -32,6 +33,20 @@ def validate_arguments(args):
 
     if args.verbose < 0 or args.verbose > 2:
         sys.exit(f'ERROR: The verbose level must be [0, 1 or 2]!')
+
+
+def clean_up():
+    cache_files = os.listdir(f'{DIR}/cache')
+    cache_files.remove('.placeholder')
+    output_files = os.listdir(f'{DIR}/output')
+    output_files.remove('.placeholder')
+
+    for file_name in cache_files:
+        path = os.path.abspath(f'{DIR}/cache/{file_name}')
+        os.remove(path)
+    for file_name in output_files:
+        path = os.path.abspath(f'{DIR}/output/{file_name}')
+        os.remove(path)
 
 
 def save_result(gap_file, violation_file, gaps, violations):
@@ -54,6 +69,9 @@ if __name__ == '__main__':
     gap_file = os.path.abspath(f'{DIR}/output/gap_{args.config_id}_{args.prediction_error}.dat')
     violation_file = os.path.abspath(f'{DIR}/output/violation_{args.config_id}_{args.prediction_error}.dat')
 
+    if args.clean:
+        clean_up()
+
     input = InputGenerator(CONFIGS[args.config_id]).generate()
     if args.verbose:
         print(input)
@@ -74,7 +92,7 @@ if __name__ == '__main__':
         objective_value = solver.solve(eta)
 
         gaps[eta] = solver.get_solution_gap(offline_objective_value)
-        violations[eta] = solver.get_maximum_budget_violation()
+        violations[eta] = solver.get_max_budget_violation()
 
         if objective_value > best_objective_value:
             best_objective_value = objective_value
