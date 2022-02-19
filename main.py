@@ -55,11 +55,12 @@ def clean_up():
     print(f'All files have been cleaned up!')
 
 
-def save_result(gap_file, gaps):
+def save_result(gap_file, gaps, best_eta):
     with open(gap_file, 'w+') as out_file:
-        out_file.write('# eta\tgap\n')
+        out_file.write('# eta   \tgap\n')
         for eta, gap in gaps.items():
-            out_file.write(f'{eta}\t\t{gap}\n')
+            out_file.write(f'{eta}   \t\t{gap}\n')
+        out_file.write(f'# best eta = {best_eta}')
 
 
 if __name__ == '__main__':
@@ -79,14 +80,15 @@ if __name__ == '__main__':
     lp_solver.print_solution()
 
     gaps = {}
+    best_etas = {}
 
     for error in args.prediction_error:
         include_prediction(input.items, error, lp_solver.integral_solution)
         solver = BoundedAllocationProblemSolver(input, verbose=args.verbose)
 
         gaps[error] = {}
+        best_etas[error] = 0
         best_objective_value = -1
-        best_eta = None
 
         for k in range(args.number_of_experiments + 1):
             eta = k / args.number_of_experiments
@@ -95,13 +97,13 @@ if __name__ == '__main__':
 
             if objective_value > best_objective_value:
                 best_objective_value = objective_value
-                best_eta = eta
+                best_etas[error] = eta
 
-        solver.solve(best_eta)
+        solver.solve(best_etas[error])
         solver.print_solution(error, offline_objective_value)
         verify_solution(solver.assignment, len(input.items))
 
         gap_file = os.path.abspath(f'{DIR}/output/gap_{args.config_id}_{error}.dat')
-        save_result(gap_file, gaps[error])
+        save_result(gap_file, gaps[error], best_etas[error])
 
-    plot_result(gaps)
+    plot_result(gaps, best_etas)
