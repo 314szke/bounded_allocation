@@ -6,22 +6,24 @@ from src.bounded_allocation import BoundedAllocationProblemSolver
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
+from src.visualization import plot_results
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Experiment with the bounded allocation problem.')
-    parser.add_argument('prediction_error', type=float, help='Determines the error rate of the predictor. [0.0, 1.0]')
-    parser.add_argument('number_of_experiments', type=int, help='The value of eta will range from 0/N to N/N.')
-    parser.add_argument('config_id', type=int, help='The id of the configuration to use.')
+    parser.add_argument('-e', '--prediction_error', type=float, nargs='+', default=[0.0, 0.01, 0.1], help='A list of the error rates of the predictor. Range: [0.0, 1.0]')
+    parser.add_argument('-n', '--number_of_experiments', type=int, default=10, help='The value of eta will range from 0/n to n/n.')
+    parser.add_argument('-i', '--config_id', type=int, default=1, help='The id of the configuration to use.')
     parser.add_argument('-v', '--verbose', type=int, default=0, help='Sets the execution\'s verbose level. [0, 1 or 2]')
     parser.add_argument('-c', '--clean', action='store_true', help='Deletes the cache and output files.')
     return parser.parse_args()
 
 
 def validate_arguments(args):
-    if args.prediction_error < 0.0 or args.prediction_error > 1.0:
-        sys.exit(f'ERROR: The prediction error must be in the interval [0.0, 1.0]!')
+    for error in args.prediction_error:
+        if error < 0.0 or error > 1.0:
+            sys.exit(f'ERROR: The prediction error must be in the interval [0.0, 1.0]!')
 
     if args.number_of_experiments < 2:
         sys.exit(f'ERROR: The number of experiments should be at least 2!')
@@ -48,6 +50,8 @@ def clean_up():
         path = os.path.abspath(f'{DIR}/output/{file_name}')
         os.remove(path)
 
+    print(f'All files have been cleaned up!')
+
 
 def save_result(gap_file, violation_file, gaps, violations):
     with open(gap_file, 'w+') as out_file:
@@ -65,39 +69,47 @@ if __name__ == '__main__':
     args = parse_arguments()
     validate_arguments(args)
 
-    cache_file = os.path.abspath(f'{DIR}/cache/cache_{args.config_id}.json')
-    gap_file = os.path.abspath(f'{DIR}/output/gap_{args.config_id}_{args.prediction_error}.dat')
-    violation_file = os.path.abspath(f'{DIR}/output/violation_{args.config_id}_{args.prediction_error}.dat')
-
     if args.clean:
         clean_up()
+        sys.exit(0)
 
     input = InputGenerator(CONFIGS[args.config_id]).generate()
     if args.verbose:
         print(input)
 
+    cache_file = os.path.abspath(f'{DIR}/cache/cache_{args.config_id}.json')
     lp_solver = LPSolverWrapper(input, cache_file, verbose=args.verbose)
     offline_objective_value = lp_solver.solve()
     lp_solver.print_solution()
 
-    solver = BoundedAllocationProblemSolver(input, verbose=args.verbose)
-
     gaps = {}
     violations = {}
-    best_objective_value = -1
-    best_eta = None
 
-    for k in range(args.number_of_experiments + 1):
-        eta = k / args.number_of_experiments
-        objective_value = solver.solve(eta)
+    for error in args.prediction_error:
+        # TODO: add prediction to input
+        solver = BoundedAllocationProblemSolver(input, verbose=args.verbose)
 
-        gaps[eta] = solver.get_solution_gap(offline_objective_value)
-        violations[eta] = solver.get_max_budget_violation()
+        gaps[error] = {}
+        violations[error] = {}
+        best_objective_value = -1
+        best_eta = None
 
-        if objective_value > best_objective_value:
-            best_objective_value = objective_value
-            best_eta = eta
+        for k in range(args.number_of_experiments + 1):
+            eta = k / args.number_of_experiments
+            objective_value = solver.solve(eta)
 
-    solver.solve(best_eta)
-    solver.print_solution(offline_objective_value)
-    save_result(gap_file, violation_file, gaps, violations)
+            gaps[error][eta] = solver.get_solution_gap(offline_objective_value)
+            violations[error][eta] = solver.get_max_budget_violation()
+
+            if objective_value > best_objective_value:
+                best_objective_value = objective_value
+                best_eta = eta
+
+        solver.solve(best_eta)
+        solver.print_solution(error, offline_objective_value)
+
+        gap_file = os.path.abspath(f'{DIR}/output/gap_{args.config_id}_{error}.dat')
+        violation_file = os.path.abspath(f'{DIR}/output/violation_{args.config_id}_{error}.dat')
+        save_result(gap_file, violation_file, gaps[error], violations[error])
+
+    plot_results(gaps, violations)

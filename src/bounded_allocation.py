@@ -152,9 +152,10 @@ class BoundedAllocationProblemSolver:
         return max_violation
 
 
-    def print_solution(self, offline_objective_value):
+    def print_solution(self, error, offline_objective_value):
         print('The online solution:')
         print(f'Eta = {self.doubt}')
+        print(f'Prediction error = {error}')
         print(f'Objective value = {self.objective_value}')
         print(f'Gap = {self.get_solution_gap(offline_objective_value)} %')
         if self.verbose:
