@@ -11,13 +11,14 @@ The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code
 ## Minimum requirements
 
     python 3.9.1
+    matplotlib 3.4.3
     PuLP 2.5.1
 
     Gurobi 9.5.0
 
 ## Usage
 
-    python3 main.py <prediction error> <number of experiments> <configuration id>
+    python3 main.py -e <list of prediction error rates> -n <number of experiments> -i <configuration id>
 
 
 For more details on the parameters, use:
