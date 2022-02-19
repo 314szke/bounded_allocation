@@ -38,6 +38,14 @@ class BoundedAllocationProblemSolver:
 
 
     def _allocate_for_one_buyer(self, item):
+        # If the prediction is to not sell, we do not assign the prediction fraction
+        if item.prediction is None:
+            return self.doubt
+
+        # The predicted buyer cannot buy the item, try to allocate it to other buyers
+        if self.buyers[item.prediction].budget_fraction >= 1.0:
+            return 1.0
+
         prediction_fraction = ROUND(1.0 - self.doubt)
         remaining_fraction = self.doubt
 

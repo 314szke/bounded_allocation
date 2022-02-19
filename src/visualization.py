@@ -8,7 +8,7 @@ def plot_results(gaps, violations):
         axis[0].plot(gap.keys(), gap.values(), label=f'error = {error}')
     axis[0].set_title('Gap values in %')
     axis[0].set_xlabel('eta')
-    axis[0].set_yticks(list(range(0, 101, 20)))
+    #axis[0].set_yticks(list(range(0, 101, 20)))
     axis[0].legend(loc='upper right')
 
     for error, violation in violations.items():

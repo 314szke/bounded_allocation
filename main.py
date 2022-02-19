@@ -76,8 +76,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     input = InputGenerator(CONFIGS[args.config_id]).generate()
-    if args.verbose:
-        print(input)
+    print(input)
 
     cache_file = os.path.abspath(f'{DIR}/cache/cache_{args.config_id}.json')
     lp_solver = LPSolverWrapper(input, cache_file, verbose=args.verbose)

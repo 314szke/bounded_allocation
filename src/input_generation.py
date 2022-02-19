@@ -7,7 +7,7 @@ class Buyer:
         self.id = id
         self.budget = budget
 
-        self.spent = 0
+        self.spent = 0.0
         self.budget_fraction = 0.0
 
         self.wanted_item_ids = []
@@ -28,7 +28,7 @@ class Buyer:
 
 
     def spend(self, amount):
-        self.spent += amount
+        self.spent = ROUND(self.spent + amount)
         self.budget_fraction = ROUND(self.spent / self.budget)
 
 
