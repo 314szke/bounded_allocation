@@ -112,7 +112,7 @@ class LPSolverWrapper:
 
 
     def print_solution(self):
-        ratio = (self.fractional_objective_value / self.integral_objective_value)
+        ratio = (self.integral_objective_value / self.fractional_objective_value)
         integrality_gap = ROUND((1.0 - ratio) * 100)
 
         print('The offline solution:')
