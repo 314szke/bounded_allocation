@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from src.bounded_allocation import BoundedAllocationProblemSolver
+from src.algorithm_1 import Algorithm_1
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     for error in args.prediction_error:
         include_prediction(input.items, error, lp_solver.integral_solution)
-        solver = BoundedAllocationProblemSolver(input, verbose=args.verbose)
+        solver = Algorithm_1(input, verbose=args.verbose)
 
         gaps[error] = {}
         best_etas[error] = 0
