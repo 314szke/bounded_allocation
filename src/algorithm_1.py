@@ -27,11 +27,12 @@ class Algorithm_1(BoundedAllocationProblemSolver):
             price_fraction = ROUND(item.price * prediction_fraction)
             remaining_fraction = ROUND(1.0 - prediction_fraction)
 
-        self.assignment[item.prediction][item.id] = prediction_fraction
+        self._assign_fraction(item.prediction, item.id, prediction_fraction)
         self.buyers[item.prediction].spend(price_fraction)
         self._update_buyer_level(item.prediction)
 
         return remaining_fraction
+
 
     def solve(self, eta):
         self.doubt = ROUND(eta)

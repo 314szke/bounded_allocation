@@ -15,7 +15,7 @@ class Buyer:
 
 
     def __str__(self):
-        return f'Buyer\t[{self.id}]:\tbudget = {self.budget},\t\tspent_fraction = {self.budget_fraction},   \twanted_items = {self.wanted_item_ids}'
+        return f'Buyer\t[{self.id}]:\tbudget = {self.budget},\t\tbudget_fraction = {self.budget_fraction},   \twanted_items = {self.wanted_item_ids}'
 
 
     def __repr__(self):
