@@ -1,6 +1,8 @@
 import random
 
-def include_prediction(items, error_rate, optimal_solution):
+def include_prediction(items, error_rate, optimal_solution, seed):
+    random.seed(seed)
+
     for id in range(len(items)):
         items[id].prediction = None
 

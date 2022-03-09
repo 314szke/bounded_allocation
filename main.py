@@ -94,7 +94,7 @@ if __name__ == '__main__':
         best_etas[algo_id] = {}
 
         for error in args.prediction_error:
-            include_prediction(input.items, error, lp_solver.integral_solution)
+            include_prediction(input.items, error, lp_solver.integral_solution, input.config.random_seed)
             solver = SOLVERS[algo_id](input, verbose=args.verbose)
 
             gaps[algo_id][error] = {}

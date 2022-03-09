@@ -97,13 +97,13 @@ class LPSolverWrapper:
         self.model = pulp.LpProblem(name='max-profit-bounded-allocation', sense=pulp.LpMaximize)
         self._init_model('Binary')
         self.model.solve(pulp.GUROBI_CMD(msg=self.print_solver_messages))
+        self.status = self.model.status
         self.integral_objective_value = self.model.objective.value()
         self.integral_solution = self._get_solution()
 
         self.model = pulp.LpProblem(name='max-profit-bounded-allocation', sense=pulp.LpMaximize)
         self._init_model("Continuous")
         self.model.solve(pulp.GUROBI_CMD(msg=self.print_solver_messages))
-        self.status = self.model.status
         self.fractional_objective_value = ROUND(self.model.objective.value())
         self.fractional_solution = self._get_solution()
 

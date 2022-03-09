@@ -18,7 +18,7 @@ The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code
 
 ## Usage
 
-    python3 main.py -e <list of prediction error rates> -n <number of experiments> -i <configuration id>
+    python3 main.py -e <list of prediction error rates> -n <number of experiments> -i <configuration id> -a <list of algorithm ids>
 
 
 For more details on the parameters, use:
