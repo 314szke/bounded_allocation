@@ -4,7 +4,7 @@ Experiment with integrating prediction information to the online fractional algo
 
 ## Credits
 
-The base algorithm's description is from Section 13 of the survey *The Design of Competitive Online Algorithms via a Primal–Dual Approach* by Niv Buchbinder and Joseph Naor.
+The base algorithm's description is from Section 13 of the survey *The Design of Competitive Online Algorithms via a Primal–Dual Approach* by Niv Buchbinder and Joseph Naor. ([survey available here](https://www.tau.ac.il/~nivb/download/pd-survey.pdf))
 
 The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code available here](https://webia.lip6.fr/~durrc//packing/))
 
@@ -18,7 +18,12 @@ The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code
 
 ## Usage
 
-    python3 main.py -e <list of prediction error rates> -n <number of experiments> -i <configuration id> -a <list of algorithm ids>
+    python3 main.py
+        -e <list of prediction error rates>
+        -n <number of experiments>
+        -i <configuration id>
+        -a <list of algorithm ids>
+        -m <flag to use manual id>
 
 
 For more details on the parameters, use:
