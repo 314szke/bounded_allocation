@@ -6,6 +6,7 @@ from src.solvers import SOLVERS
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
+from src.manual_input import MANUAL_INPUTS
 from src.prediction import include_prediction
 from src.verification import verify_solution
 from src.visualization import plot_result
@@ -18,6 +19,7 @@ def parse_arguments():
     parser.add_argument('-n', '--number_of_experiments', type=int, default=10, help='The value of eta will range from 0/n to n/n.')
     parser.add_argument('-i', '--config_id', type=int, default=1, help='The id of the configuration to use.')
     parser.add_argument('-a', '--algorithm', type=int, nargs='+', default=[1], help='The list of ids of the algorithms to use.')
+    parser.add_argument('-m', '--manual', action='store_true', help='If set, config id points to a manual input.')
     parser.add_argument('-v', '--verbose', type=int, default=0, help='Sets the execution\'s verbose level. [0, 1 or 2]')
     parser.add_argument('-c', '--clean', action='store_true', help='Deletes the cache and output files.')
     return parser.parse_args()
@@ -31,16 +33,23 @@ def validate_arguments(args):
     if args.number_of_experiments < 2:
         sys.exit(f'ERROR: The number of experiments should be at least 2!')
 
-    try:
-        _ = CONFIGS[args.config_id]
-    except:
-        sys.exit(f'ERROR: The configuration with id [{args.config_id}] does not exist!')
+    if not args.manual:
+        try:
+            _ = CONFIGS[args.config_id]
+        except:
+            sys.exit(f'ERROR: The configuration with id [{args.config_id}] does not exist!')
 
     for id in args.algorithm:
         try:
             _ = SOLVERS[id]
         except:
             sys.exit(f'ERROR: The algorithm with id [{id}] does not exist!')
+
+    if args.manual:
+        try:
+            _ = MANUAL_INPUTS[args.config_id]
+        except:
+            sys.exit(f'ERROR: The manual input with id [{args.manual}] does not exist!')
 
     if args.verbose < 0 or args.verbose > 2:
         sys.exit(f'ERROR: The verbose level must be [0, 1 or 2]!')
@@ -78,10 +87,15 @@ if __name__ == '__main__':
         clean_up()
         sys.exit(0)
 
-    input = InputGenerator(CONFIGS[args.config_id]).generate()
+    if args.manual:
+        input = MANUAL_INPUTS[args.manual]
+        manual_str = 'm'
+    else:
+        input = InputGenerator(CONFIGS[args.config_id]).generate()
+        manual_str = ''
     print(input)
 
-    cache_file = os.path.abspath(f'{DIR}/cache/cache_{args.config_id}.json')
+    cache_file = os.path.abspath(f'{DIR}/cache/cache_{manual_str}_{args.config_id}.json')
     lp_solver = LPSolverWrapper(input, cache_file, verbose=args.verbose)
     offline_objective_value = lp_solver.solve()
     lp_solver.print_solution()
@@ -114,7 +128,7 @@ if __name__ == '__main__':
             solver.print_solution(error, offline_objective_value)
             verify_solution(solver.assignment, len(input.items))
 
-            gap_file = os.path.abspath(f'{DIR}/output/gap_{algo_id}_{args.config_id}_{error}.dat')
+            gap_file = os.path.abspath(f'{DIR}/output/gap_{manual_str}_{algo_id}_{args.config_id}_{error}.dat')
             save_result(gap_file, gaps[algo_id][error], best_etas[algo_id][error])
 
     plot_result(gaps, best_etas)

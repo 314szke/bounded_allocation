@@ -39,6 +39,7 @@ class Algorithm_2(BoundedAllocationProblemSolver):
                 else:
                     fraction = ROUND(amount / item.price)
                     self._allocate_equally(item, fraction)
+
                     max_steps = int((1 - fraction) / self.allocation_step)
                     for _ in range(max_steps):
                         if self._all_buyers_spent_enough(item.interested_buyers):

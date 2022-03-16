@@ -14,6 +14,7 @@ class ProblemConfiguration:
 
         self.random_seed = seed
 
+
     def __str__(self):
         output = 'Configuration:\n'
         output +=  f'Buyers:\t\t{self.num_buyers}\nItems:\t\t{self.num_items}\n'
