@@ -1,18 +1,20 @@
+from dataclasses import dataclass
+
+@dataclass
 class ProblemConfiguration:
-    def __init__(self, buyers, items, min_budget, max_budget, min_buyers, max_buyers, min_price, max_price, seed):
-        self.num_buyers = buyers
-        self.num_items = items
+    num_buyers: int
+    num_items: int
 
-        self.min_budget = min_budget
-        self.max_budget = max_budget
+    min_budget: int
+    max_budget: int
 
-        self.min_buyers = min_buyers
-        self.max_buyers = max_buyers
+    min_buyers: int
+    max_buyers: int
 
-        self.min_price = min_price
-        self.max_price = max_price
+    min_price: int
+    max_price: int
 
-        self.random_seed = seed
+    random_seed: int
 
 
     def __str__(self):
@@ -30,5 +32,6 @@ CONFIGS = {
     2: ProblemConfiguration(100, 1000, 10, 100, 2, 5, 0.1, 8, 22),
     3: ProblemConfiguration(100, 10_000, 10, 1000, 2, 3, 1, 10, 2022),
     4: ProblemConfiguration(4, 8, 10, 100, 1, 4, 10, 100, 1984),
-    5: ProblemConfiguration(4, 8, 10, 100, 1, 3, 10, 50, 1984)
+    5: ProblemConfiguration(4, 8, 10, 100, 1, 3, 10, 50, 1984),
+    6: ProblemConfiguration(10, 100, 100, 100, 2, 10, 10, 10, 101)
 }

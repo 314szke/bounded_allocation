@@ -9,6 +9,7 @@ class BoundedAllocationProblemSolver:
         self.bound = data.bound
         self.verbose = verbose
         self.doubt = 0.0
+        self.objective_value = 0
         self._init_solver()
 
 
@@ -21,7 +22,6 @@ class BoundedAllocationProblemSolver:
             self.levels[0].add(buyer.id)
 
         self.assignment = [defaultdict(lambda: 0) for _ in self.buyers]
-        self.objective_value = 0
 
 
     def _update_buyer_level(self, buyer_id):
