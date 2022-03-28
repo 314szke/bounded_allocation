@@ -9,17 +9,17 @@ class Algorithm_2(BoundedAllocationProblemSolver):
 
 
     def _all_buyers_spent_enough(self, buyer_ids):
-        for id in buyer_ids:
-            if self.buyers[id].budget_fraction < self.doubt:
+        for buyer_id in buyer_ids:
+            if self.buyers[buyer_id].budget_fraction < self.doubt:
                 return False
         return True
 
 
     def _needed_amount_to_reach_limit(self, buyer_ids):
         amount = 0.0
-        for id in buyer_ids:
-            if self.buyers[id].budget_fraction < self.doubt:
-                amount += (self.doubt - self.buyers[id].budget_fraction) * self.buyers[id].budget
+        for buyer_id in buyer_ids:
+            if self.buyers[buyer_id].budget_fraction < self.doubt:
+                amount += (self.doubt - self.buyers[buyer_id].budget_fraction) * self.buyers[buyer_id].budget
         return ROUND(amount)
 
 

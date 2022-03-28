@@ -2,8 +2,8 @@ from src.utils import ROUND
 
 
 class Buyer:
-    def __init__(self, id, budget):
-        self.id = id
+    def __init__(self, buyer_id, budget):
+        self.id = buyer_id
         self.budget = budget
 
         self.spent = 0.0
@@ -33,8 +33,8 @@ class Buyer:
 
 
 class Item:
-    def __init__(self, id, price, buyer_ids):
-        self.id = id
+    def __init__(self, item_id, price, buyer_ids):
+        self.id = item_id
         self.price = price
         self.interested_buyers = buyer_ids
         self.prediction = None

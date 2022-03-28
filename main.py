@@ -39,11 +39,11 @@ def validate_arguments(args):
         except:
             sys.exit(f'ERROR: The configuration with id [{args.config_id}] does not exist!')
 
-    for id in args.algorithm:
+    for algo_id in args.algorithm:
         try:
-            _ = SOLVERS[id]
+            _ = SOLVERS[algo_id]
         except:
-            sys.exit(f'ERROR: The algorithm with id [{id}] does not exist!')
+            sys.exit(f'ERROR: The algorithm with id [{algo_id}] does not exist!')
 
     if args.manual:
         try:

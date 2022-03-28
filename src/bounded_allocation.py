@@ -82,9 +82,9 @@ class BoundedAllocationProblemSolver:
 
     def _get_min_max_price(self, buyer_ids, fraction_bound):
         max_price = float('inf')
-        for id in buyer_ids:
-            available_fraction = ROUND(fraction_bound - self.buyers[id].budget_fraction)
-            available_budget = ROUND(self.buyers[id].budget * available_fraction)
+        for buyer_id in buyer_ids:
+            available_fraction = ROUND(fraction_bound - self.buyers[buyer_id].budget_fraction)
+            available_budget = ROUND(self.buyers[buyer_id].budget * available_fraction)
             if available_budget < max_price:
                 max_price = available_budget
         return max_price
@@ -118,11 +118,11 @@ class BoundedAllocationProblemSolver:
                 fraction_per_buyer = max_fraction_per_buyer
                 price_fraction_per_buyer = max_price_per_buyer
 
-            for id in buyer_ids:
-                self._assign_fraction(id, item.id, fraction_per_buyer)
-                self.buyers[id].spend(price_fraction_per_buyer)
-                if self.buyers[id].budget_fraction >= fraction_bound:
-                    exhausted_buyer_ids.add(id)
+            for buyer_id in buyer_ids:
+                self._assign_fraction(buyer_id, item.id, fraction_per_buyer)
+                self.buyers[buyer_id].spend(price_fraction_per_buyer)
+                if self.buyers[buyer_id].budget_fraction >= fraction_bound:
+                    exhausted_buyer_ids.add(buyer_id)
 
             if last_round:
                 return 0.0
@@ -135,10 +135,10 @@ class BoundedAllocationProblemSolver:
 
     def _update_level_sets(self, level_idx, buyer_ids):
         fraction_bound = ROUND((level_idx + 1) / self.bound)
-        for id in buyer_ids:
-            if self.buyers[id].budget_fraction >= fraction_bound:
-                self.levels[level_idx].remove(id)
-                self.levels[level_idx + 1].add(id)
+        for buyer_id in buyer_ids:
+            if self.buyers[buyer_id].budget_fraction >= fraction_bound:
+                self.levels[level_idx].remove(buyer_id)
+                self.levels[level_idx + 1].add(buyer_id)
 
 
     def _allocate_equally(self, item, remaining_fraction):
@@ -159,8 +159,8 @@ class BoundedAllocationProblemSolver:
     def _calculate_objective_value(self):
         self.objective_value = 0.0
         for sold_items in self.assignment:
-            for id, fraction in sold_items.items():
-                self.objective_value += self.items[id].price * fraction
+            for item_id, fraction in sold_items.items():
+                self.objective_value += self.items[item_id].price * fraction
         self.objective_value = ROUND(self.objective_value)
 
 

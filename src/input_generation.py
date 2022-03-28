@@ -33,8 +33,8 @@ class InputGenerator(Input):
             buyer_ids = self._get_buyer_ids()
             price = self._get_price()
             self.items.append(Item(idx, price, buyer_ids))
-            for id in buyer_ids:
-                self.buyers[id].wanted_item_ids.append(idx)
-                self.buyers[id].potential_expense = ROUND(self.buyers[id].potential_expense + price)
+            for buyer_id in buyer_ids:
+                self.buyers[buyer_id].wanted_item_ids.append(idx)
+                self.buyers[buyer_id].potential_expense = ROUND(self.buyers[buyer_id].potential_expense + price)
 
         return self

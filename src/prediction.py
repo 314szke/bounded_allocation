@@ -3,8 +3,8 @@ import random
 def include_prediction(items, error_rate, optimal_solution, seed):
     random.seed(seed)
 
-    for id in range(len(items)):
-        items[id].prediction = None
+    for item_id in range(len(items)):
+        items[item_id].prediction = None
 
     for buyer_id, assigned_items in enumerate(optimal_solution):
         for item_id, fraction in assigned_items.items():
