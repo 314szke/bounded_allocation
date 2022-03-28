@@ -1,4 +1,6 @@
+from collections import defaultdict
 from src.utils import ROUND
+
 
 class BoundedAllocationProblemSolver:
     def __init__(self, data, verbose):
@@ -18,7 +20,7 @@ class BoundedAllocationProblemSolver:
         for buyer in self.buyers:
             self.levels[0].add(buyer.id)
 
-        self.assignment = [{} for _ in self.buyers]
+        self.assignment = [defaultdict(lambda: 0) for _ in self.buyers]
         self.objective_value = 0
 
 
@@ -65,7 +67,7 @@ class BoundedAllocationProblemSolver:
             price_fraction = available_budget
             new_fraction = ROUND(remaining_fraction - prediction_fraction)
 
-        self._assign_fraction(item.prediction, item.id, prediction_fraction)
+        self.assignment[item.prediction][item.id] = ROUND(self.assignment[item.prediction][item.id] + prediction_fraction)
         self.buyers[item.prediction].spend(price_fraction)
         self._update_buyer_level(item.prediction)
 
@@ -90,13 +92,6 @@ class BoundedAllocationProblemSolver:
         return max_price
 
 
-    def _assign_fraction(self, buyer_id, item_id, fraction):
-        try:
-            self.assignment[buyer_id][item_id] = ROUND(self.assignment[buyer_id][item_id] + fraction)
-        except KeyError:
-            self.assignment[buyer_id][item_id] = fraction
-
-
     def _allocate_on_level(self, item, remaining_fraction, level_idx, buyer_ids):
         fraction_bound = ROUND((level_idx + 1) / self.bound)
         exhausted_buyer_ids = set()
@@ -119,7 +114,7 @@ class BoundedAllocationProblemSolver:
                 price_fraction_per_buyer = max_price_per_buyer
 
             for buyer_id in buyer_ids:
-                self._assign_fraction(buyer_id, item.id, fraction_per_buyer)
+                self.assignment[buyer_id][item.id] = ROUND(self.assignment[buyer_id][item.id] + fraction_per_buyer)
                 self.buyers[buyer_id].spend(price_fraction_per_buyer)
                 if self.buyers[buyer_id].budget_fraction >= fraction_bound:
                     exhausted_buyer_ids.add(buyer_id)
@@ -177,7 +172,7 @@ class BoundedAllocationProblemSolver:
         print(f'Gap = {self.get_solution_gap(offline_objective_value)} %')
         if self.verbose:
             for idx, items in enumerate(self.assignment):
-                print(f'Buyer [{idx}] purchased: {items}')
+                print(f'Buyer [{idx}] purchased: {dict(items)}')
         print()
 
 
