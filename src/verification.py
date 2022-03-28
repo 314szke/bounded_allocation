@@ -17,6 +17,6 @@ def verify_solution(solution, num_items):
             valid = False
 
     if not valid:
-        sys.exit(f'Verification failed!')
+        sys.exit('Verification failed!')
 
     print('Solution verified!\n')

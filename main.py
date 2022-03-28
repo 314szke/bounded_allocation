@@ -28,31 +28,31 @@ def parse_arguments():
 def validate_arguments(args):
     for error in args.prediction_error:
         if error < 0.0 or error > 1.0:
-            sys.exit(f'ERROR: The prediction error must be in the interval [0.0, 1.0]!')
+            sys.exit('ERROR: The prediction error must be in the interval [0.0, 1.0]!')
 
     if args.number_of_experiments < 2:
-        sys.exit(f'ERROR: The number of experiments should be at least 2!')
+        sys.exit('ERROR: The number of experiments should be at least 2!')
 
     if not args.manual:
         try:
             _ = CONFIGS[args.config_id]
-        except:
+        except KeyError:
             sys.exit(f'ERROR: The configuration with id [{args.config_id}] does not exist!')
 
     for algo_id in args.algorithm:
         try:
             _ = SOLVERS[algo_id]
-        except:
+        except KeyError:
             sys.exit(f'ERROR: The algorithm with id [{algo_id}] does not exist!')
 
     if args.manual:
         try:
             _ = MANUAL_INPUTS[args.config_id]
-        except:
+        except KeyError:
             sys.exit(f'ERROR: The manual input with id [{args.manual}] does not exist!')
 
     if args.verbose < 0 or args.verbose > 2:
-        sys.exit(f'ERROR: The verbose level must be [0, 1 or 2]!')
+        sys.exit('ERROR: The verbose level must be [0, 1 or 2]!')
 
 
 def clean_up():
@@ -68,7 +68,7 @@ def clean_up():
         path = os.path.abspath(f'{DIR}/output/{file_name}')
         os.remove(path)
 
-    print(f'All files have been cleaned up!')
+    print('All files have been cleaned up!')
 
 
 def save_result(gap_file, gaps, best_eta):

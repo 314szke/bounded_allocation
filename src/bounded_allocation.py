@@ -93,7 +93,7 @@ class BoundedAllocationProblemSolver:
     def _assign_fraction(self, buyer_id, item_id, fraction):
         try:
             self.assignment[buyer_id][item_id] = ROUND(self.assignment[buyer_id][item_id] + fraction)
-        except:
+        except KeyError:
             self.assignment[buyer_id][item_id] = fraction
 
 
@@ -190,5 +190,3 @@ class BoundedAllocationProblemSolver:
         for item in self.items:
             print(item)
         print()
-
-        self.print_solution()
