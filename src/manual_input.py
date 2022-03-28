@@ -1,10 +1,10 @@
 from src.configuration import ProblemConfiguration
-from src.input import Buyer, Item, Input
+from src.input import Buyer, Item, ProblemInput
 
 
 def Input_1():
     config = ProblemConfiguration(5, 6, 100, 100, 1, 5, 40, 100, 1111)
-    new_input = Input(config)
+    new_input = ProblemInput(config)
 
     new_input.buyers.append(Buyer(0, 100))
     new_input.buyers[0].wanted_item_ids = [0]

@@ -19,7 +19,10 @@ class LPSolverWrapper:
         self.verbose = verbose
         self.print_solver_messages = (self.verbose == 2)
 
+        self.model = None
+        self.vars = []
         self.status = None
+
         self.integral_objective_value = 0
         self.integral_solution = []
         self.fractional_objective_value = 0
@@ -80,13 +83,13 @@ class LPSolverWrapper:
 
 
     def _get_solution(self):
-        self.solution = []
+        solution = []
         for i in self.buyer_ids:
             buyer_variables = {}
             for j in self.buyers[i].wanted_item_ids:
                 buyer_variables[j] = self.vars[i][j].varValue
-            self.solution.append(buyer_variables)
-        return self.solution
+            solution.append(buyer_variables)
+        return solution
 
 
     def solve(self):

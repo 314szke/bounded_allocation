@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 
+from collections import defaultdict
+
 from src.solvers import SOLVERS
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
@@ -100,21 +102,15 @@ if __name__ == '__main__':
     offline_objective_value = lp_solver.solve()
     lp_solver.print_solution()
 
-    gaps = {}
-    best_etas = {}
+    gaps = defaultdict(lambda: defaultdict(lambda: {}))
+    best_etas = defaultdict(lambda: defaultdict(lambda: 0))
 
     for algo_id in args.algorithm:
-        gaps[algo_id] = {}
-        best_etas[algo_id] = {}
-
         for error in args.prediction_error:
             include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
             solver = SOLVERS[algo_id](data, verbose=args.verbose)
 
-            gaps[algo_id][error] = {}
-            best_etas[algo_id][error] = 0
             best_objective_value = -1
-
             for k in range(args.number_of_experiments + 1):
                 eta = k / args.number_of_experiments
                 objective_value = solver.solve(eta)

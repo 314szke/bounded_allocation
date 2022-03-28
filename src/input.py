@@ -13,12 +13,8 @@ class Buyer:
         self.potential_expense = 0
 
 
-    def __str__(self):
-        return f'Buyer\t[{self.id}]:\tbudget = {self.budget},\t\tbudget_fraction = {self.budget_fraction},   \twanted_items = {self.wanted_item_ids}'
-
-
     def __repr__(self):
-        return self.__str__()
+        return f'Buyer\t[{self.id}]:\tbudget = {self.budget},\t\tbudget_fraction = {self.budget_fraction},   \twanted_items = {self.wanted_item_ids}'
 
 
     def reset(self):
@@ -40,16 +36,12 @@ class Item:
         self.prediction = None
 
 
-    def __str__(self):
+    def __repr__(self):
         return f'Item\t[{self.id}]:\tprice = {self.price},\t\tprediction = {self.prediction},   \t\tinterested_buyers = {self.interested_buyers}'
 
 
-    def __repr__(self):
-        return self.__str__()
 
-
-
-class Input:
+class ProblemInput:
     def __init__(self, configuration):
         self.config = configuration
         self.buyers = []
@@ -60,16 +52,16 @@ class Input:
 
 
     def _get_metric_string(self, name, value_list, all):
-        min_value = min(value_list)
-        max_value = max(value_list)
-        sum_value = sum(value_list)
-        avg_value = ROUND(sum_value / all)
+        min_value = int(min(value_list))
+        max_value = int(max(value_list))
+        sum_value = int(sum(value_list))
+        avg_value = int(ROUND(sum_value / all))
         return f'{name}\tmin = {min_value},\tmax = {max_value},\taverage = {avg_value}\n'
 
 
     def __str__(self):
         output = self.config.__str__()
-        output += '\n\nObservations after generation:\n'
+        output += '\n\nObservations of the input:\n'
 
         budget_list = [x.budget for x in self.buyers]
         output += self._get_metric_string('Budget:\t', budget_list, self.config.num_buyers)
