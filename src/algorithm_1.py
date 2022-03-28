@@ -3,8 +3,8 @@ from src.utils import ROUND
 
 
 class Algorithm_1(BoundedAllocationProblemSolver):
-    def __init__(self, input, verbose):
-        BoundedAllocationProblemSolver.__init__(self, input, verbose)
+    def __init__(self, data, verbose):
+        BoundedAllocationProblemSolver.__init__(self, data, verbose)
 
 
     def solve(self, eta):

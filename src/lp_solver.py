@@ -5,15 +5,15 @@ import pulp
 from src.utils import ROUND
 
 class LPSolverWrapper:
-    def __init__(self, input, cache_file, verbose):
-        self.buyers = input.buyers
-        self.buyer_ids = input.buyer_ids
+    def __init__(self, data, cache_file, verbose):
+        self.buyers = data.buyers
+        self.buyer_ids = data.buyer_ids
 
-        self.items = input.items
-        self.item_ids = input.item_ids
+        self.items = data.items
+        self.item_ids = data.item_ids
 
-        self.budgets = [x.budget for x in input.buyers]
-        self.prices = [x.price for x in input.items]
+        self.budgets = [x.budget for x in data.buyers]
+        self.prices = [x.price for x in data.items]
 
         self.cache_file = cache_file
         self.verbose = verbose

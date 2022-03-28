@@ -1,10 +1,10 @@
 from src.utils import ROUND
 
 class BoundedAllocationProblemSolver:
-    def __init__(self, input, verbose):
-        self.buyers = input.buyers
-        self.items = input.items
-        self.bound = input.bound
+    def __init__(self, data, verbose):
+        self.buyers = data.buyers
+        self.items = data.items
+        self.bound = data.bound
         self.verbose = verbose
         self.doubt = 0.0
         self._init_solver()

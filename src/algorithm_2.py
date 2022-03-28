@@ -3,8 +3,8 @@ from src.utils import ROUND
 
 
 class Algorithm_2(BoundedAllocationProblemSolver):
-    def __init__(self, input, verbose):
-        BoundedAllocationProblemSolver.__init__(self, input, verbose)
+    def __init__(self, data, verbose):
+        BoundedAllocationProblemSolver.__init__(self, data, verbose)
         self.allocation_step = ROUND(1 / (self.bound * 10))
 
 

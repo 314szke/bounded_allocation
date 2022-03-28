@@ -88,15 +88,15 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if args.manual:
-        input = MANUAL_INPUTS[args.manual]
+        data = MANUAL_INPUTS[args.manual]
         manual_str = 'm'
     else:
-        input = InputGenerator(CONFIGS[args.config_id]).generate()
+        data = InputGenerator(CONFIGS[args.config_id]).generate()
         manual_str = ''
-    print(input)
+    print(data)
 
     cache_file = os.path.abspath(f'{DIR}/cache/cache_{manual_str}_{args.config_id}.json')
-    lp_solver = LPSolverWrapper(input, cache_file, verbose=args.verbose)
+    lp_solver = LPSolverWrapper(data, cache_file, verbose=args.verbose)
     offline_objective_value = lp_solver.solve()
     lp_solver.print_solution()
 
@@ -108,8 +108,8 @@ if __name__ == '__main__':
         best_etas[algo_id] = {}
 
         for error in args.prediction_error:
-            include_prediction(input.items, error, lp_solver.integral_solution, input.config.random_seed)
-            solver = SOLVERS[algo_id](input, verbose=args.verbose)
+            include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
+            solver = SOLVERS[algo_id](data, verbose=args.verbose)
 
             gaps[algo_id][error] = {}
             best_etas[algo_id][error] = 0
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
             solver.solve(best_etas[algo_id][error])
             solver.print_solution(error, offline_objective_value)
-            verify_solution(solver.assignment, len(input.items))
+            verify_solution(solver.assignment, len(data.items))
 
             gap_file = os.path.abspath(f'{DIR}/output/gap_{manual_str}_{algo_id}_{args.config_id}_{error}.dat')
             save_result(gap_file, gaps[algo_id][error], best_etas[algo_id][error])
