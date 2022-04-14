@@ -171,17 +171,10 @@ class BoundedAllocationProblemSolver:
         print(f'Objective value = {self.objective_value}')
         print(f'Gap = {self.get_solution_gap(offline_objective_value)} %')
         if self.verbose:
-            for idx, items in enumerate(self.assignment):
-                print(f'Buyer [{idx}] purchased: {dict(items)}')
+            self.print_assignment()
         print()
 
 
-    def print(self):
-        print('The problem instance:')
-        for buyer in self.buyers:
-            print(buyer)
-        print()
-
-        for item in self.items:
-            print(item)
-        print()
+    def print_assignment(self):
+        for idx, items in enumerate(self.assignment):
+            print(f'Buyer [{idx}] purchased: {dict(items)}')

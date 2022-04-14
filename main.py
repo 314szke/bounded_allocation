@@ -90,7 +90,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if args.manual:
-        data = MANUAL_INPUTS[args.manual]
+        data = MANUAL_INPUTS[args.config_id]
         manual_str = 'm'
     else:
         data = InputGenerator(CONFIGS[args.config_id]).generate()
