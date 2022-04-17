@@ -36,7 +36,7 @@ def Input_1():
 
 
 def Input_2():
-    config = ProblemConfiguration(2, 3, 10, 100, 1, 2, 10, 80, 3111)
+    config = ProblemConfiguration(3, 4, 10, 100, 1, 3, 10, 80, 3111)
     new_input = ProblemInput(config)
 
     new_input.buyers.append(Buyer(0, 10))
@@ -47,9 +47,14 @@ def Input_2():
     new_input.buyers[1].wanted_item_ids = [0, 1]
     new_input.buyers[1].potential_expense = 100
 
+    new_input.buyers.append(Buyer(2, 10))
+    new_input.buyers[2].wanted_item_ids = [1, 3]
+    new_input.buyers[2].potential_expense = 90
+
     new_input.items.append(Item(0, 20, [1]))
-    new_input.items.append(Item(1, 80, [0, 1]))
+    new_input.items.append(Item(1, 80, [0, 1, 2]))
     new_input.items.append(Item(2, 10, [0]))
+    new_input.items.append(Item(3, 10, [2]))
     return new_input
 
 
