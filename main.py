@@ -4,7 +4,7 @@ import sys
 
 from collections import defaultdict
 
-from src.solvers import SOLVERS
+from src.algorithm import Algorithm
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
@@ -20,7 +20,6 @@ def parse_arguments():
     parser.add_argument('-e', '--prediction_error', type=float, nargs='+', default=[0.0, 0.01, 0.1], help='A list of the error rates of the predictor. Range: [0.0, 1.0]')
     parser.add_argument('-n', '--number_of_experiments', type=int, default=10, help='The value of eta will range from 0/n to n/n.')
     parser.add_argument('-i', '--config_id', type=int, default=1, help='The id of the configuration to use.')
-    parser.add_argument('-a', '--algorithm', type=int, nargs='+', default=[1], help='The list of ids of the algorithms to use.')
     parser.add_argument('-m', '--manual', action='store_true', help='If set, config id points to a manual input.')
     parser.add_argument('-v', '--verbose', type=int, default=0, help='Sets the execution\'s verbose level. [0, 1 or 2]')
     parser.add_argument('-c', '--clean', action='store_true', help='Deletes the cache and output files.')
@@ -40,12 +39,6 @@ def validate_arguments(args):
             _ = CONFIGS[args.config_id]
         except KeyError:
             sys.exit(f'ERROR: The configuration with id [{args.config_id}] does not exist!')
-
-    for algo_id in args.algorithm:
-        try:
-            _ = SOLVERS[algo_id]
-        except KeyError:
-            sys.exit(f'ERROR: The algorithm with id [{algo_id}] does not exist!')
 
     if args.manual:
         try:
@@ -102,29 +95,28 @@ if __name__ == '__main__':
     offline_objective_value = lp_solver.solve()
     lp_solver.print_solution()
 
-    gaps = defaultdict(lambda: defaultdict(lambda: {}))
-    best_etas = defaultdict(lambda: defaultdict(lambda: 0))
+    gaps = defaultdict(lambda: {})
+    best_etas = defaultdict(lambda: 0)
 
-    for algo_id in args.algorithm:
-        for error in args.prediction_error:
-            include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
-            solver = SOLVERS[algo_id](data, verbose=args.verbose)
+    for error in args.prediction_error:
+        include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
+        solver = Algorithm(data, verbose=args.verbose)
 
-            best_objective_value = -1
-            for k in range(args.number_of_experiments + 1):
-                eta = k / args.number_of_experiments
-                objective_value = solver.solve(eta)
-                gaps[algo_id][error][eta] = solver.get_solution_gap(offline_objective_value)
+        best_objective_value = -1
+        for k in range(args.number_of_experiments + 1):
+            eta = k / args.number_of_experiments
+            objective_value = solver.solve(eta)
+            gaps[error][eta] = solver.get_solution_gap(offline_objective_value)
 
-                if objective_value > best_objective_value:
-                    best_objective_value = objective_value
-                    best_etas[algo_id][error] = eta
+            if objective_value > best_objective_value:
+                best_objective_value = objective_value
+                best_etas[error] = eta
 
-            solver.solve(best_etas[algo_id][error])
-            solver.print_solution(error, offline_objective_value)
-            verify_solution(solver.assignment, len(data.items))
+        solver.solve(best_etas[error])
+        solver.print_solution(error, offline_objective_value)
+        verify_solution(solver.assignment, len(data.items))
 
-            gap_file = os.path.abspath(f'{DIR}/output/gap_{manual_str}_{algo_id}_{args.config_id}_{error}.dat')
-            save_result(gap_file, gaps[algo_id][error], best_etas[algo_id][error])
+        gap_file = os.path.abspath(f'{DIR}/output/gap_{manual_str}_{args.config_id}_{error}.dat')
+        save_result(gap_file, gaps[error], best_etas[error])
 
     plot_result(gaps, best_etas)

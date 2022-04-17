@@ -2,7 +2,7 @@ from src.bounded_allocation import BoundedAllocationProblemSolver
 from src.utils import ROUND
 
 
-class Algorithm_2(BoundedAllocationProblemSolver):
+class Algorithm(BoundedAllocationProblemSolver):
     def __init__(self, data, verbose):
         super().__init__(data, verbose)
         self.allocation_step = ROUND(1 / (self.bound * 10))

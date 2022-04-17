@@ -80,5 +80,5 @@ class ProblemInput:
 
         overflow = sum([x.potential_expense > x.budget for x in self.buyers])
         percentage = ROUND((overflow / self.config.num_buyers) * 100)
-        output += f'{percentage} % number of buyers want to spend more, than their budget.\n'
+        output += f'{int(percentage)} % number of buyers want to spend more, than their budget.\n'
         return output
