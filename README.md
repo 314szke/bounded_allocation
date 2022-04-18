@@ -1,10 +1,10 @@
 # Experiment with the bounded allocation problem
 
-Experiment with integrating prediction information to the online fractional algorithm solving the bounded allocation problem.
+Experiment with an algorithm that integrates prediction information to the solving of the online fractional bounded allocation problem.
 
 ## Credits
 
-The base algorithm's description is from Section 13 of the survey *The Design of Competitive Online Algorithms via a Primal–Dual Approach* by Niv Buchbinder and Joseph Naor. ([survey available here](https://www.tau.ac.il/~nivb/download/pd-survey.pdf))
+The algorithm integrates an online algorithm from Section 13 of the survey *The Design of Competitive Online Algorithms via a Primal–Dual Approach* by Niv Buchbinder and Joseph Naor. ([survey available here](https://www.tau.ac.il/~nivb/download/pd-survey.pdf))
 
 The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code available here](https://webia.lip6.fr/~durrc//packing/))
 
@@ -22,8 +22,7 @@ The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code
         -e <list of prediction error rates>
         -n <number of experiments>
         -i <configuration id>
-        -a <list of algorithm ids>
-        -m <flag to use manual id>
+        -m <flag to use manual configuration id>
 
 
 For more details on the parameters, use:
