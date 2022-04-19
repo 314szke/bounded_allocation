@@ -122,3 +122,4 @@ class LPSolverWrapper:
         print(f'Status: {self.status} - {pulp.LpStatus[self.status]}')
         print(f'Objective value = {self.fractional_objective_value}')
         print(f'Integrality gap = {integrality_gap} %')
+        print()
