@@ -4,7 +4,7 @@ import sys
 
 from collections import defaultdict
 
-from src.algorithm import Algorithm
+from src.bounded_allocation_solver import BoundedAllocationSolver
 from src.configuration import CONFIGS
 from src.input_generation import InputGenerator
 from src.lp_solver import LPSolverWrapper
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     for error in args.prediction_error:
         include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
-        solver = Algorithm(data, verbose=args.verbose)
+        solver = BoundedAllocationSolver(data, verbose=args.verbose)
 
         best_objective_value = -1
         for k in range(args.number_of_experiments + 1):

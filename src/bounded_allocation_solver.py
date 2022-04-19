@@ -2,14 +2,16 @@ from collections import defaultdict
 from src.utils import ROUND
 
 
-class BoundedAllocationProblemSolver:
+class BoundedAllocationSolver:
     def __init__(self, data, verbose):
         self.buyers = data.buyers
         self.items = data.items
         self.bound = data.bound
         self.verbose = verbose
+
         self.eta = 0.0
         self.objective_value = 0
+        self.allocation_step = ROUND(1 / (self.bound * 10))
         self._init_solver()
 
 
@@ -151,12 +153,59 @@ class BoundedAllocationProblemSolver:
             self._update_level_sets(level_idx, buyer_ids)
 
 
+    def _needed_amount_to_reach_limit(self, buyer_ids):
+        amount = 0.0
+        for buyer_id in buyer_ids:
+            if self.buyers[buyer_id].budget_fraction < self.eta:
+                amount += (self.eta - self.buyers[buyer_id].budget_fraction) * self.buyers[buyer_id].budget
+        return ROUND(amount)
+
+
+    def _all_buyers_spent_enough(self, buyer_ids):
+        for buyer_id in buyer_ids:
+            if self.buyers[buyer_id].budget_fraction < self.eta:
+                return False
+        return True
+
+
     def _calculate_objective_value(self):
         self.objective_value = 0.0
         for sold_items in self.assignment:
             for item_id, fraction in sold_items.items():
                 self.objective_value += self.items[item_id].price * fraction
         self.objective_value = ROUND(self.objective_value)
+
+
+    def solve(self, eta):
+        self.eta = ROUND(eta)
+        self._init_solver()
+
+        for item in self.items:
+            if item.prediction is None:
+                self._allocate_equally(item, self.eta)
+            else:
+                amount = self._needed_amount_to_reach_limit(item.interested_buyers)
+                fraction = 1.0
+
+                if amount >= item.price:
+                    self._allocate_equally(item, fraction)
+                else:
+                    fraction = ROUND(amount / item.price)
+                    self._allocate_equally(item, fraction)
+
+                    max_steps = int((1 - fraction) / self.allocation_step)
+                    for _ in range(max_steps):
+                        if self._all_buyers_spent_enough(item.interested_buyers):
+                            break
+                        self._allocate_equally(item, self.allocation_step)
+                        fraction = ROUND(fraction + self.allocation_step)
+
+                remaining_fraction = ROUND(1 - fraction)
+                remaining_fraction = self._allocate_for_one_buyer(item, remaining_fraction)
+                self._allocate_equally(item, remaining_fraction)
+
+        self._calculate_objective_value()
+        return self.objective_value
 
 
     def get_solution_gap(self, offline_objective_value):
