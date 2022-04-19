@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
         solver.solve(best_etas[error])
         solver.print_solution(error, offline_objective_value)
-        verify_solution(solver.assignment, len(data.items))
+        verify_solution(solver.assignment, data)
 
         gap_file = os.path.abspath(f'{DIR}/output/gap_{manual_str}_{args.config_id}_{error}.dat')
         save_result(gap_file, gaps[error], best_etas[error])

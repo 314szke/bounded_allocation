@@ -1,15 +1,22 @@
 import sys
 
-def verify_solution(solution, num_items):
+def verify_solution(solution, data):
     valid = True
-    item_fractions = [0 for _ in range(num_items)]
+    budget_spent = [0 for _ in data.buyer_ids]
+    item_fractions = [0 for _ in data.item_ids]
 
     for buyer_id, assigned_items in enumerate(solution):
         for item_id, fraction in assigned_items.items():
             if fraction < 0.0 or fraction > 1.0:
                 print(f'ERROR: Assigned fraction of {fraction} for buyer {buyer_id} of item {item_id}!')
                 valid = False
+            budget_spent[buyer_id] += fraction * data.items[item_id].price
             item_fractions[item_id] += fraction
+
+    for buyer_id, budget in enumerate(budget_spent):
+        if round(budget, 2) > data.buyers[buyer_id].budget:
+            print(f'ERROR: Buyer {buyer_id} spent {budget} while its budget is {data.buyers[buyer_id].budget}!')
+            valid = False
 
     for item_id, fraction in enumerate(item_fractions):
         if round(fraction, 2) > 1.0:

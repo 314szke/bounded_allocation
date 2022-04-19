@@ -76,10 +76,10 @@ class LPSolverWrapper:
         self.model += pulp.lpSum(weighted_vars)
 
         # Constraints
-        for j in self.item_ids:
-            self.model += (pulp.lpSum(self.vars[i][j] for i in self.items[j].interested_buyers) <= 1, f"item_fraction_{j}")
         for i in self.buyer_ids:
             self.model += (pulp.lpSum(self.prices[j] * self.vars[i][j] for j in self.buyers[i].wanted_item_ids) <= self.budgets[i], f"budget_{i}")
+        for j in self.item_ids:
+            self.model += (pulp.lpSum(self.vars[i][j] for i in self.items[j].interested_buyers) <= 1, f"item_fraction_{j}")
 
 
     def _get_solution(self):
@@ -105,7 +105,7 @@ class LPSolverWrapper:
         self.integral_solution = self._get_solution()
 
         self.model = pulp.LpProblem(name='max-profit-bounded-allocation', sense=pulp.LpMaximize)
-        self._init_model("Continuous")
+        self._init_model('Continuous')
         self.model.solve(pulp.GUROBI_CMD(msg=self.print_solver_messages))
         self.fractional_objective_value = ROUND(self.model.objective.value())
         self.fractional_solution = self._get_solution()
@@ -122,7 +122,3 @@ class LPSolverWrapper:
         print(f'Status: {self.status} - {pulp.LpStatus[self.status]}')
         print(f'Objective value = {self.fractional_objective_value}')
         print(f'Integrality gap = {integrality_gap} %')
-        if self.verbose:
-            for idx, items in enumerate(self.fractional_solution):
-                print(f'Buyer [{idx}] purchased: {items}')
-        print()
