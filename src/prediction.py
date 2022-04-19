@@ -9,7 +9,7 @@ def include_prediction(items, error_rate, optimal_solution, seed):
     for buyer_id, assigned_items in enumerate(optimal_solution):
         for item_id, fraction in assigned_items.items():
             if fraction == 1.0:
-                # Impose error in the prediction, but keep it feasible
+                # Impose error in the prediction, but keep it reasonable
                 if random.random() < error_rate:
                     if len(items[item_id].interested_buyers) == 1:
                         items[item_id].prediction = buyer_id
