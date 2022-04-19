@@ -106,7 +106,7 @@ if __name__ == '__main__':
         for k in range(args.number_of_experiments + 1):
             eta = k / args.number_of_experiments
             objective_value = solver.solve(eta)
-            gaps[error][eta] = solver.get_solution_gap(offline_objective_value)
+            gaps[error][eta] = solver.get_solution_robustness(offline_objective_value)
 
             if objective_value > best_objective_value:
                 best_objective_value = objective_value

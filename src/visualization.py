@@ -19,8 +19,8 @@ def plot_result(gaps, best_etas):
         shift += 0.3
 
     axis.set_xlabel('eta')
-    axis.set_ylabel('Gap values in %')
-    axis.legend(loc='lower right')
+    axis.set_ylabel('ALGO(I) / OPT(I)')
+    axis.legend(loc='upper right')
 
     figure.tight_layout()
     plt.show()

@@ -208,9 +208,8 @@ class BoundedAllocationSolver:
         return self.objective_value
 
 
-    def get_solution_gap(self, offline_objective_value):
-        ratio = (self.objective_value / offline_objective_value)
-        return  ROUND(((1.0 - ratio) * 100))
+    def get_solution_robustness(self, offline_objective_value):
+        return ROUND(self.objective_value / offline_objective_value)
 
 
     def print_solution(self, error, offline_objective_value):
@@ -218,7 +217,7 @@ class BoundedAllocationSolver:
         print(f'Prediction error = {error}')
         print(f'Eta = {self.eta}')
         print(f'Objective value = {self.objective_value}')
-        print(f'Gap = {self.get_solution_gap(offline_objective_value)} %')
+        print(f'Robustness = {self.get_solution_robustness(offline_objective_value)}')
         if self.verbose:
             self.print_assignment()
         print()
