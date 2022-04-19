@@ -8,7 +8,7 @@ class BoundedAllocationProblemSolver:
         self.items = data.items
         self.bound = data.bound
         self.verbose = verbose
-        self.doubt = 0.0
+        self.eta = 0.0
         self.objective_value = 0
         self._init_solver()
 
@@ -46,13 +46,13 @@ class BoundedAllocationProblemSolver:
 
         # If the prediction is to not sell, we do not assign the prediction fraction
         if item.prediction is None:
-            return self.doubt
+            return self.eta
 
         # The predicted buyer cannot buy the item, try to allocate it to other buyers
         if self.buyers[item.prediction].budget_fraction >= 1.0:
             return remaining_fraction
 
-        prediction_fraction = ROUND(1.0 - self.doubt)
+        prediction_fraction = ROUND(1.0 - self.eta)
         new_fraction = ROUND(remaining_fraction - prediction_fraction)
 
         if remaining_fraction < prediction_fraction:
@@ -167,7 +167,7 @@ class BoundedAllocationProblemSolver:
     def print_solution(self, error, offline_objective_value):
         print('The online solution:')
         print(f'Prediction error = {error}')
-        print(f'Eta = {self.doubt}')
+        print(f'Eta = {self.eta}')
         print(f'Objective value = {self.objective_value}')
         print(f'Gap = {self.get_solution_gap(offline_objective_value)} %')
         if self.verbose:
