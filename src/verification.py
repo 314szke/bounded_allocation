@@ -13,9 +13,9 @@ def verify_solution(solution, data):
             budget_spent[buyer_id] += fraction * data.items[item_id].price
             item_fractions[item_id] += fraction
 
-    for buyer_id, budget in enumerate(budget_spent):
-        if round(budget, 2) > data.buyers[buyer_id].budget:
-            print(f'ERROR: Buyer {buyer_id} spent {budget} while its budget is {data.buyers[buyer_id].budget}!')
+    for buyer_id, spent in enumerate(budget_spent):
+        if round(spent, 2) > data.buyers[buyer_id].budget:
+            print(f'ERROR: Buyer {buyer_id} spent {spent} while its budget is {data.buyers[buyer_id].budget}!')
             valid = False
 
     for item_id, fraction in enumerate(item_fractions):
