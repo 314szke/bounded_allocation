@@ -33,5 +33,6 @@ CONFIGS = {
     3: ProblemConfiguration(100, 10_000, 10, 1000, 2, 3, 1, 10, 2022),
     4: ProblemConfiguration(4, 8, 10, 100, 1, 4, 10, 100, 1984),
     5: ProblemConfiguration(4, 8, 10, 100, 1, 3, 10, 50, 1984),
-    6: ProblemConfiguration(10, 100, 100, 100, 2, 10, 10, 10, 101)
+    6: ProblemConfiguration(10, 100, 100, 100, 2, 10, 10, 10, 101),
+    7: ProblemConfiguration(80, 80, 10, 100, 1, 40, 10, 100, 1984)
 }
