@@ -18,8 +18,8 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Experiment with the bounded allocation problem.')
-    parser.add_argument('-e', '--prediction_error', type=float, nargs='+', default=[0.0, 0.01, 0.1], help='A list of the error rates of the predictor. Range: [0.0, 1.0]')
     parser.add_argument('-r', '--random_iterations', type=int, default=1, help='Number of random inputs to average over.')
+    parser.add_argument('-e', '--prediction_error', type=float, nargs='+', default=[0.0, 0.01, 0.1], help='A list of the error rates of the predictor. Range: [0.0, 1.0]')
     parser.add_argument('-n', '--number_of_experiments', type=int, default=10, help='The value of eta will range from 0/n to n/n.')
     parser.add_argument('-i', '--config_id', type=int, default=1, help='The id of the configuration to use.')
     parser.add_argument('-m', '--manual', action='store_true', help='If set, config id points to a manual input.')
