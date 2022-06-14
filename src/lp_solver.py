@@ -114,12 +114,14 @@ class LPSolverWrapper:
         return self.fractional_objective_value
 
 
-    def print_solution(self):
+    def get_integrality_gap(self):
         ratio = (self.integral_objective_value / self.fractional_objective_value)
-        integrality_gap = ROUND((1.0 - ratio) * 100)
+        return ROUND((1.0 - ratio) * 100)
 
+
+    def print_solution(self):
         print('The offline solution:')
         print(f'Status: {self.status} - {pulp.LpStatus[self.status]}')
         print(f'Objective value = {self.fractional_objective_value}')
-        print(f'Integrality gap = {integrality_gap} %')
+        print(f'Integrality gap = {self.get_integrality_gap()} %')
         print()

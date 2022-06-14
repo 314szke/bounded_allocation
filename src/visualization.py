@@ -1,27 +1,47 @@
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 
-def plot_result(gaps, best_etas):
-    plt.rc('font', size=12)
-    plt.rc('axes', titlesize=12)
-    plt.rc('axes', labelsize=12)
-    plt.rc('xtick', labelsize=12)
-    plt.rc('ytick', labelsize=12)
-    plt.rc('legend', fontsize=12)
+def plot_result(result_file):
+    plt.rc('font', size=16)
+    plt.rc('axes', titlesize=16)
+    plt.rc('axes', labelsize=16)
+    plt.rc('xtick', labelsize=16)
+    plt.rc('ytick', labelsize=16)
+    plt.rc('legend', fontsize=16)
 
-    figure, axis = plt.subplots(1, 1, figsize=(14, 7))
-    figure.suptitle('Experiment result', fontweight='bold')
+    data = pd.read_csv(result_file, sep=';',index_col=0)
 
-    line_shift = 0.3
-    point_shift = 0.01
-    for error, gap in gaps.items():
-        axis.plot(gap.keys(), gap.values(), linewidth=3, linestyle=(0, (5, 8 + line_shift)), label=f'prediction error = {error}')
-        axis.scatter(best_etas[error], point_shift, label=f'best eta for {error} error')
-        line_shift += 0.3
-        point_shift += 0.01
+    figure, axis = plt.subplots(1, 1, figsize=(7, 7))
 
-    axis.set_xlabel('eta')
+    sns.lineplot(data=data, x='Eta', y='Gap', hue='PredictionError', linewidth=2,
+                palette='colorblind', style='PredictionError', markers=True, legend='full')
+
+    axis.set_xlabel(r'$\eta$')
     axis.set_ylabel('ALGO(I) / OPT(I)')
+    axis.legend(loc='lower right')
+
+    figure.tight_layout()
+    plt.show()
+
+
+def plot_metrics(metric_file):
+    plt.rc('font', size=16)
+    plt.rc('axes', titlesize=16)
+    plt.rc('axes', labelsize=16)
+    plt.rc('xtick', labelsize=16)
+    plt.rc('ytick', labelsize=16)
+    plt.rc('legend', fontsize=16)
+
+    data = pd.read_csv(metric_file, sep=';')
+
+    figure, axis = plt.subplots(1, 1, figsize=(7, 7))
+
+    sns.regplot(data=data, x='ID', y='IntegralityGap')
+
+    axis.set_xlabel('Random Iteration ID')
+    axis.set_ylabel('Integrality Gap')
     axis.legend(loc='lower right')
 
     figure.tight_layout()

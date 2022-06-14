@@ -49,14 +49,17 @@ class ProblemInput:
         self.items = []
         self.item_ids = list(range(self.config.num_items))
         self.bound = self.config.max_buyers
+        self.metrics = {}
 
 
-    def _get_metric_string(self, name, value_list, all):
-        min_value = int(min(value_list))
-        max_value = int(max(value_list))
+    def _get_metric_string(self, display_name, value_list, all):
+        name = display_name.split(':')[0]
+        self.metrics[name] = {}
+        self.metrics[name]['min'] = int(min(value_list))
+        self.metrics[name]['max'] = int(max(value_list))
         sum_value = int(sum(value_list))
-        avg_value = int(ROUND(sum_value / all))
-        return f'{name}\tmin = {min_value},\tmax = {max_value},\taverage = {avg_value}\n'
+        self.metrics[name]['avg'] = int(ROUND(sum_value / all))
+        return f"{display_name}\tmin = {self.metrics[name]['min']},\tmax = {self.metrics[name]['max']},\taverage = {self.metrics[name]['avg']}\n"
 
 
     def __str__(self):

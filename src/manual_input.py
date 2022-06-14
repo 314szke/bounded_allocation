@@ -93,5 +93,5 @@ def Input_3():
 MANUAL_INPUTS = {
     1: Input_1(),
     2: Input_2(),
-    3: Input_3()
+    3: Input_3() # Instance 1 in the report
 }

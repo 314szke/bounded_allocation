@@ -12,7 +12,9 @@ The code was inspired by the work of Christoph Durr and Nguyen Kim Thang. ([code
 
     python 3.9.1
     matplotlib 3.4.3
+    pandas 1.2.3
     PuLP 2.5.1
+    seaborn 0.11.2
 
     Gurobi 9.5.0
 

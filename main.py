@@ -12,7 +12,7 @@ from src.manual_input import MANUAL_INPUTS
 from src.prediction import include_prediction
 from src.utils import ROUND
 from src.verification import verify_solution
-from src.visualization import plot_result
+from src.visualization import plot_result, plot_metrics
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -60,6 +60,8 @@ def clean_up():
     cache_files.remove('.placeholder')
     output_files = os.listdir(f'{DIR}/output')
     output_files.remove('.placeholder')
+    metric_files = os.listdir(f'{DIR}/metrics')
+    metric_files.remove('.placeholder')
 
     for file_name in cache_files:
         path = os.path.abspath(f'{DIR}/cache/{file_name}')
@@ -67,16 +69,37 @@ def clean_up():
     for file_name in output_files:
         path = os.path.abspath(f'{DIR}/output/{file_name}')
         os.remove(path)
+    for file_name in metric_files:
+        path = os.path.abspath(f'{DIR}/metrics/{file_name}')
+        os.remove(path)
 
     print('All files have been cleaned up!')
 
 
-def save_result(gap_file, gaps, best_eta):
-    with open(gap_file, 'w+') as out_file:
-        out_file.write('# eta   \tgap\n')
-        for eta, gap in gaps.items():
-            out_file.write(f'{eta}   \t\t{gap}\n')
-        out_file.write(f'# best eta = {best_eta}')
+def save_result(result_file, gaps, eta_values):
+    with open(result_file, 'w+') as out_file:
+        out_file.write('ID;RandomIteration;PredictionError;Eta;Gap\n')
+        instance_id = 0
+        for idx in range(len(gaps)):
+            for key1 in gaps[idx].keys():
+                for key2 in gaps[idx][key1].keys():
+                    out_file.write(f"{instance_id};{idx};{key1};{key2};{gaps[idx][key1][key2]}\n")
+                    instance_id += 1
+
+
+def save_metrics(metric_file, metrics, integrality_gaps):
+    with open(metric_file, 'w+') as out_file:
+        out_file.write('ID;IntegralityGap;BudgetMin;BudgetMax;BudgetAvg;')
+        out_file.write('PriceMin;PriceMax;PriceAvg;NumBuyersMin;NumBuyersMax;NumBuyersAvg;')
+        out_file.write('NumItemsMin;NumItemsMax;NumItemsAvg;ExpensesMin;ExpensesMax;ExpensesAvg\n')
+        for idx in range(len(integrality_gaps)):
+            out_file.write(f'{idx};{integrality_gaps[idx]};')
+            out_file.write(f"{metrics[idx]['Budget']['min']};{metrics[idx]['Budget']['max']};{metrics[idx]['Budget']['avg']};")
+            out_file.write(f"{metrics[idx]['Price']['min']};{metrics[idx]['Price']['max']};{metrics[idx]['Price']['avg']};")
+            out_file.write(f"{metrics[idx]['NumBuyers']['min']};{metrics[idx]['NumBuyers']['max']};{metrics[idx]['NumBuyers']['avg']};")
+            out_file.write(f"{metrics[idx]['NumItems']['min']};{metrics[idx]['NumItems']['max']};{metrics[idx]['NumItems']['avg']};")
+            out_file.write(f"{metrics[idx]['Expenses']['min']};{metrics[idx]['Expenses']['max']};{metrics[idx]['Expenses']['avg']}\n")
+
 
 
 if __name__ == '__main__':
@@ -95,74 +118,64 @@ if __name__ == '__main__':
         random_iterations = args.random_iterations
         manual_str = ''
 
+    # Result data structures
+    metrics = []
+    integrality_gaps = [0 for _ in range(random_iterations)]
     gaps = [defaultdict(lambda: {}) for _ in range(random_iterations)]
-    best_etas = [defaultdict(lambda: 0) for _ in range(random_iterations)]
-
     eta_values = [k / args.number_of_experiments for k in range(args.number_of_experiments + 1)]
+
+    # Files
+    result_file = os.path.abspath(f'{DIR}/output/result_{manual_str}_{args.config_id}.csv')
+    metric_file = os.path.abspath(f'{DIR}/metrics/instance_{manual_str}_{args.config_id}.csv')
 
 
     # Execute several random iterations and average over the result
-    for random_idx in range(random_iterations):
-        # Instance setup
-        if args.manual:
-            data = MANUAL_INPUTS[args.config_id]
-        else:
-            configuration = CONFIGS[args.config_id]
-            configuration.random_seed += random_idx
-            data = InputGenerator(configuration).generate()
-        print(data)
-
-        # LP solving
-        cache_file = os.path.abspath(f'{DIR}/cache/cache_{manual_str}_{args.config_id}_{random_idx}.json')
-        lp_solver = LPSolverWrapper(data, cache_file, verbose=args.verbose)
-        offline_objective_value = lp_solver.solve()
-        lp_solver.print_solution()
-
-        # Iterate over several error rates in the prediction
-        for error in args.prediction_error:
-            include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
-            solver = BoundedAllocationSolver(data, verbose=args.verbose)
-
-            # Run the solver on several eta values
-            best_objective_value = -1
-            for eta in eta_values:
-                objective_value = solver.solve(eta)
-                gaps[random_idx][error][eta] = solver.get_solution_robustness(offline_objective_value)
-
-                if objective_value > best_objective_value:
-                    best_objective_value = objective_value
-                    best_etas[random_idx][error] = eta
-
-            # Verify solution on the best eta value
-            solver.solve(best_etas[random_idx][error])
-            solver.print_solution(error, offline_objective_value)
-            verify_solution(solver.assignment, data)
-
-
-    # Calculate the average
-    average_gaps = defaultdict(lambda: {})
-    average_best_etas = defaultdict(lambda: 0)
-
-    for error in args.prediction_error:
-        for eta in eta_values:
-            # Average gap
-            accumulated_gap = 0
-            for random_idx in range(random_iterations):
-                accumulated_gap += gaps[random_idx][error][eta]
-            average_gaps[error][eta] = ROUND(accumulated_gap / random_iterations)
-
-        # Average best eta
-        accumulated_eta = 0
+    if not os.path.exists(result_file):
         for random_idx in range(random_iterations):
-            accumulated_eta += best_etas[random_idx][error]
-        average_best_etas[error] = ROUND(accumulated_eta / random_iterations)
+            # Instance setup
+            if args.manual:
+                data = MANUAL_INPUTS[args.config_id]
+            else:
+                configuration = CONFIGS[args.config_id]
+                configuration.random_seed += random_idx
+                data = InputGenerator(configuration).generate()
+            print(data)
+            metrics.append(data.metrics)
 
+            # LP solving
+            cache_file = os.path.abspath(f'{DIR}/cache/cache_{manual_str}_{args.config_id}_{random_idx}.json')
+            lp_solver = LPSolverWrapper(data, cache_file, verbose=args.verbose)
+            offline_objective_value = lp_solver.solve()
+            lp_solver.print_solution()
+            integrality_gaps[random_idx] = lp_solver.get_integrality_gap()
 
-    # Save result
-    for error in args.prediction_error:
-        gap_file = os.path.abspath(f'{DIR}/output/gap_{manual_str}_{args.config_id}_{error}.dat')
-        save_result(gap_file, average_gaps[error], average_best_etas[error])
+            # Iterate over several error rates in the prediction
+            for error in args.prediction_error:
+                include_prediction(data.items, error, lp_solver.integral_solution, data.config.random_seed)
+                solver = BoundedAllocationSolver(data, verbose=args.verbose)
+
+                # Run the solver on several eta values
+                best_objective_value = -1
+                best_eta = -1
+                for eta in eta_values:
+                    objective_value = solver.solve(eta)
+                    gaps[random_idx][error][eta] = solver.get_solution_robustness(offline_objective_value)
+
+                    if objective_value > best_objective_value:
+                        best_objective_value = objective_value
+                        best_eta = eta
+
+                # Verify solution on the best eta value
+                solver.solve(best_eta)
+                solver.print_solution(error, offline_objective_value)
+                verify_solution(solver.assignment, data)
+
+        # Save result
+        save_result(result_file, gaps, eta_values)
+        # Save metrics
+        save_metrics(metric_file, metrics, integrality_gaps)
 
 
     # Display result
-    plot_result(average_gaps, average_best_etas)
+    plot_result(result_file)
+    plot_metrics(metric_file)
