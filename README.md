@@ -1,6 +1,6 @@
 # Experiment with the bounded allocation problem
 
-Experiment with an algorithm that integrates prediction information to the solving of the online fractional bounded allocation problem.
+Experiment with an algorithm that integrates prediction information to the solving of the online fractional bounded allocation problem. More details can be found in the **report.pdf** file.
 
 ## Credits
 
